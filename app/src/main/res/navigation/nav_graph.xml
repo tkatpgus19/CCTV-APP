@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/realtimeFragment">
+
+    <fragment
+        android:id="@+id/archiveFragment"
+        android:name="com.example.cctv_app.ArchiveFragment"
+        android:label="fragment_archive"
+        tools:layout="@layout/fragment_archive" />
+    <fragment
+        android:id="@+id/realtimeFragment"
+        android:name="com.example.cctv_app.RealtimeFragment"
+        android:label="fragment_mobile"
+        tools:layout="@layout/fragment_realtime" />
+    <fragment
+        android:id="@+id/blankFragment"
+        android:name="com.example.cctv_app.BlankFragment"
+        android:label="fragment_blank"
+        tools:layout="@layout/fragment_blank" />
+    <fragment
+        android:id="@+id/fullscreenFragment"
+        android:name="com.example.cctv_app.FullscreenFragment"
+        android:label="fragment_fullscreen"
+        tools:layout="@layout/fragment_fullscreen" />
+</navigation>
