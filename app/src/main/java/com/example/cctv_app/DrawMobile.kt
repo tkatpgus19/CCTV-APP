@@ -16,7 +16,7 @@ class DrawMobile(var binding: FragmentRealtimeBinding, var activity: FragmentAct
     private var frameList: List<CctvLayout> = arrayListOf()
     private var layoutParamsList: MutableList<GridLayout.LayoutParams?> = MutableList(16){null}
     private val layoutTransition = LayoutTransition()
-    private var saveList = ArrayList<Int>()
+    private var activatedCamList = ArrayList<Int>()
 
     init {
         layoutTransition.enableTransitionType(LayoutTransition.CHANGING)
@@ -94,7 +94,7 @@ class DrawMobile(var binding: FragmentRealtimeBinding, var activity: FragmentAct
         for(n in save){
             frameList[n].setLabel("${n}")
             frameList[n].setup(0)
-            saveList.add(n)
+            activatedCamList.add(n)
         }
         for(cnt in 0..15){
             frameList[cnt].setOnLongClickListener {
@@ -110,7 +110,7 @@ class DrawMobile(var binding: FragmentRealtimeBinding, var activity: FragmentAct
                             else {
                                 frameList[cnt].setLabel("${cnt}")
                                 frameList[cnt].setup(0)
-                                saveList.add(cnt)
+                                activatedCamList.add(cnt)
                             }
                             true
                         }
@@ -118,7 +118,7 @@ class DrawMobile(var binding: FragmentRealtimeBinding, var activity: FragmentAct
                             if (frameList[cnt].isSetup) {
                                 frameList[cnt].unset()
                                 frameList[cnt].isSetup = false
-                                saveList.remove(cnt)
+                                activatedCamList.remove(cnt)
                             } else
                                 Toast.makeText(context, "이미 제거했습니다.", Toast.LENGTH_SHORT).show()
                             true
@@ -208,7 +208,7 @@ class DrawMobile(var binding: FragmentRealtimeBinding, var activity: FragmentAct
                         val bundle = Bundle()
                         bundle.putInt("cnt", cnt)
                         bundle.putBoolean("isWarning", isWarning)
-                        bundle.putIntegerArrayList("saveList", saveList)
+                        bundle.putIntegerArrayList("activatedCamList", activatedCamList)
                         val fragment = FullscreenFragment()
                         fragment.arguments = bundle
                         activity.supportFragmentManager

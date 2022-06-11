@@ -30,11 +30,11 @@ class RealtimeFragment : Fragment() {
 
         val view = binding.root
         val isTablet = arguments?.getBoolean("isTablet")
-        val save = arguments?.getIntegerArrayList("saveList")
+        val activatedCamList = arguments?.getIntegerArrayList("activatedCamList")
 
         if(isTablet == null) {
-            if(save != null){
-                for(n in save)
+            if(activatedCamList != null){
+                for(n in activatedCamList)
                     saveList.add(n)
                 drawMobile = DrawMobile(binding, requireActivity(), requireContext())
                 drawMobile.setLayoutParams()
@@ -56,8 +56,8 @@ class RealtimeFragment : Fragment() {
                 drawTablet.setClickEvent()
             }
             else{
-                if (save != null) {
-                    for (n in save)
+                if (activatedCamList != null) {
+                    for (n in activatedCamList)
                         saveList.add(n)
                 }
                 drawMobile = DrawMobile(binding, requireActivity(), requireContext())

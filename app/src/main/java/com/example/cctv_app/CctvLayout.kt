@@ -19,9 +19,11 @@ class CctvLayout(var activity: Activity) : FrameLayout(activity) {
     var isSetup = false
     var startX = 0
     var startY = 0
+    var movedX = 0
+    var movedY = 0
     var touchCnt = 0
     /* 개선해야 하는 부분 */
-    var scf = 0
+    var goto = 0
     /* 개선해야 하는 부분 */
     private val labelView: TextView = TextView(activity)
     private val statusView: TextView = TextView(activity)
@@ -91,6 +93,11 @@ class CctvLayout(var activity: Activity) : FrameLayout(activity) {
     fun setPos(startX: Int, startY: Int) {
         this.startX = startX
         this.startY = startY
+    }
+
+    fun setMovedPos(movedX: Int, movedY: Int) {
+        this.movedX = movedX
+        this.movedY = movedY
     }
 
     fun unset() {

@@ -3,6 +3,7 @@ package com.example.cctv_app
 import android.animation.LayoutTransition
 import android.content.Context
 import android.content.pm.ActivityInfo
+import android.util.Log
 import android.widget.GridLayout
 import android.widget.LinearLayout
 import android.widget.PopupMenu
@@ -21,7 +22,9 @@ class DrawTablet(var binding: FragmentRealtimeBinding, var activity: FragmentAct
         layoutTransition.setDuration(200)
     }
 
-    /* 개선해야 하는 부분 */
+    /* 개선해야 하는 부분
+    * (i % 4 < 2 ) && (i /4 < 2) -> 왼쪽 첫번째
+    * */
     private val groupList = listOf(
         listOf(0,1,4,5),
         listOf(2,3,6,7),
@@ -31,6 +34,7 @@ class DrawTablet(var binding: FragmentRealtimeBinding, var activity: FragmentAct
 
     fun setLayoutParams(){
         frameList = (0..15).map { i ->
+            val goto = 0
             val frame = CctvLayout(activity)
             val layoutParams = GridLayout.LayoutParams(
                 GridLayout.spec(i / 4 * 2, 2, 1.0f),
@@ -40,19 +44,30 @@ class DrawTablet(var binding: FragmentRealtimeBinding, var activity: FragmentAct
             layoutParams.height = 0
             frame.layoutParams = layoutParams
 
-            when(i){
-                0,1,4,5 -> {
+
+            if (i % 4 < 2) {
+                if (i / 4 < 2) {
                     frame.setPos(0,0)
-                    frame.scf = 6}
-                2,3,6,7 -> {
-                    frame.setPos(4,0)
-                    frame.scf = 5}
-                8,9,12,13 -> {
+                    frame.setMovedPos(4,2)
+                    frame.goto = goto + 6
+                }
+                else {
                     frame.setPos(0,4)
-                    frame.scf = 10}
-                else -> {
+                    frame.setMovedPos(4,4)
+                    frame.goto = goto + 10
+                }
+            }
+            else {
+                if (i / 4 < 2) {
+                    frame.setPos(4,0)
+                    frame.setMovedPos(2,2)
+                    frame.goto = goto + 5
+                }
+                else {
                     frame.setPos(4,4)
-                    frame.scf = 9}
+                    frame.setMovedPos(2,4)
+                    frame.goto = goto + 9
+                }
             }
 
             frame
@@ -83,19 +98,6 @@ class DrawTablet(var binding: FragmentRealtimeBinding, var activity: FragmentAct
     }
 
     fun setClickEvent(){
-        /* 개선해야 하는 부분 */
-        val testList = listOf(
-            listOf(2,4, 2,5, 3,4),
-            listOf(2,3, 3,2, 3,3),
-            listOf(4,4, 5,4, 5,5),
-            listOf(4,2, 4,3, 5,2))
-
-        val testList2 = listOf(
-            3,5, 2,2, 4,5, 5,3
-        )
-
-        var t = 0
-        /* 개선해야 하는 부분 */
 
         for(cnt in 0..15){
             frameList[cnt].setOnLongClickListener {
@@ -129,7 +131,105 @@ class DrawTablet(var binding: FragmentRealtimeBinding, var activity: FragmentAct
             }
         }
 
-        /* 개선해야 하는 부분 */
+        for(cnt in 0..15) {
+                frameList[cnt].setOnClickListener {
+                    if (frameList[cnt].z != 0.0f){
+                        if (frameList[cnt].touchCnt == 0) {
+                            layoutParamsList[cnt] =
+                                frameList[cnt].layoutParams as GridLayout.LayoutParams
+
+                            var countGroupNum = 0
+                            var plusX = 0
+                            var plusY = 0
+
+                            for (i in (0..15).filter { (frameList[it].goto == frameList[cnt].goto) && (it != cnt) }) {
+
+                                Log.d("CIVAL", i.toString())
+                                layoutParamsList[i] =
+                                    frameList[i].layoutParams as GridLayout.LayoutParams
+
+                                if (countGroupNum == 1)
+                                    plusX++
+                                if (countGroupNum == 2) {
+                                    plusY++
+                                    plusX--
+                                }
+
+                                var layoutParams = GridLayout.LayoutParams(
+                                    GridLayout.spec(frameList[i].movedY + plusY, 1, 0.5f),
+                                    GridLayout.spec(frameList[i].movedX + plusX, 1, 0.5f)
+                                )
+                                layoutParams.width = 0
+                                layoutParams.height = 0
+                                frameList[i].z = 0.0f
+
+                                frameList[i].layoutParams = layoutParams
+
+                                countGroupNum++
+                            }
+                            layoutParamsList[frameList[cnt].goto] =
+                                frameList[frameList[cnt].goto].layoutParams as GridLayout.LayoutParams
+
+                            Log.d("CIVAL", frameList[cnt].goto.toString())
+
+                            var layoutParams = GridLayout.LayoutParams(
+                                GridLayout.spec(frameList[cnt].movedY + plusY, 1, 0.5f),
+                                GridLayout.spec(frameList[cnt].movedX + ++plusX, 1, 0.5f)
+                            )
+                            layoutParams.width = 0
+                            layoutParams.height = 0
+                            frameList[frameList[cnt].goto].z = 0.0f
+
+                            frameList[frameList[cnt].goto].layoutParams = layoutParams
+
+                            layoutParams = GridLayout.LayoutParams(
+                                GridLayout.spec(frameList[cnt].startY, 4, 2.0f),
+                                GridLayout.spec(frameList[cnt].startX, 4, 2.0f)
+                            )
+                            layoutParams.width = 0
+                            layoutParams.height = 0
+
+                            frameList[cnt].z = 10.0f
+                            frameList[cnt].layoutParams = layoutParams
+
+                            frameList[cnt].touchCnt++
+
+                            for (other in (0..15).filter { (it != cnt) && (frameList[it].goto != frameList[cnt].goto) && it!=frameList[cnt].goto }) {
+                                layoutParamsList[other] =
+                                    frameList[other].layoutParams as GridLayout.LayoutParams
+                                frameList[other].z = 0.0f
+                            }
+                        } else if (frameList[cnt].touchCnt == 1) {
+                            activity.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
+
+                            val layoutParams = GridLayout.LayoutParams(
+                                GridLayout.spec(0, 8, 1.0f),
+                                GridLayout.spec(0, 8, 1.0f)
+                            )
+                            frameList[cnt].layoutParams = layoutParams
+
+                            frameList[cnt].touchCnt++
+                        } else {
+                            activity.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED
+
+                            frameList[cnt].layoutParams = layoutParamsList[cnt]
+                            layoutParamsList[cnt] = null
+                            frameList[cnt].z = 5.0f
+                            frameList[cnt].touchCnt = 0
+
+                            for (other in (0..15).filter { it != cnt }) {
+                                frameList[other].layoutParams = layoutParamsList[other]
+                                layoutParamsList[other] = null
+                                frameList[other].z = 5.0f
+                            }
+                        }
+                    }
+                }
+        }
+
+
+
+        /* 개선해야 하는 부분
         for(cnt in 0..3){
             for(i in groupList[cnt]) {
 
@@ -227,6 +327,6 @@ class DrawTablet(var binding: FragmentRealtimeBinding, var activity: FragmentAct
                 }
             }
         }
-        /* 개선해야 하는 부분 */
+        개선해야 하는 부분 */
     }
 }

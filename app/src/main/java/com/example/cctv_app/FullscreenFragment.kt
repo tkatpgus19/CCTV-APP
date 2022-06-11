@@ -41,11 +41,11 @@ class FullscreenFragment : Fragment() {
         }
 
         val cnt = arguments?.getInt("cnt")
-        val save = arguments?.getIntegerArrayList("saveList")
+        val activatedCamList = arguments?.getIntegerArrayList("activatedCamList")
         val warning = arguments?.getBoolean("isWarning")
 
-        if(save != null) {
-            if (save.any { it == cnt }) {
+        if(activatedCamList != null) {
+            if (activatedCamList.any { it == cnt }) {
                 frameList[cnt!!].setup(1)
                 frameList[cnt].setLabel("${cnt}")
                 if(warning!!)
@@ -60,7 +60,7 @@ class FullscreenFragment : Fragment() {
         frameList[cnt].setOnClickListener {
             val fragment = RealtimeFragment()
             val bundle = Bundle()
-            bundle.putIntegerArrayList("saveList", save)
+            bundle.putIntegerArrayList("activatedCamList", activatedCamList)
             fragment.arguments = bundle
 
             requireActivity().supportFragmentManager
