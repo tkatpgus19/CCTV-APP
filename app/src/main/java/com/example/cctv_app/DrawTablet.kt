@@ -22,16 +22,6 @@ class DrawTablet(var binding: FragmentRealtimeBinding, var activity: FragmentAct
         layoutTransition.setDuration(200)
     }
 
-    /* 개선해야 하는 부분
-    * (i % 4 < 2 ) && (i /4 < 2) -> 왼쪽 첫번째
-    * */
-    private val groupList = listOf(
-        listOf(0,1,4,5),
-        listOf(2,3,6,7),
-        listOf(8,9,12,13),
-        listOf(10,11,14,15))
-    /* 개선해야 하는 부분 */
-
     fun setLayoutParams(){
         frameList = (0..15).map { i ->
             val goto = 0
