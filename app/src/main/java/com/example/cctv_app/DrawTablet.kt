@@ -4,6 +4,7 @@ import android.animation.LayoutTransition
 import android.content.Context
 import android.content.pm.ActivityInfo
 import android.util.Log
+import android.view.View
 import android.widget.GridLayout
 import android.widget.LinearLayout
 import android.widget.PopupMenu
@@ -33,7 +34,6 @@ class DrawTablet(var binding: FragmentRealtimeBinding, var activity: FragmentAct
             layoutParams.width = 0
             layoutParams.height = 0
             frame.layoutParams = layoutParams
-
 
             if (i % 4 < 2) {
                 if (i / 4 < 2) {
@@ -96,22 +96,22 @@ class DrawTablet(var binding: FragmentRealtimeBinding, var activity: FragmentAct
                 popupMenu.show()
 
                 popupMenu.setOnMenuItemClickListener {
-                    when(it.itemId){
+                    when (it.itemId) {
                         R.id.addCam -> {
-                            if(frameList[cnt].isSetup)
-                                Toast.makeText(context, "이미 추가되어있습니다.", Toast.LENGTH_SHORT).show()
-                            else{
+                            if (frameList[cnt].isSetup)
+                                Toast.makeText(context, "이미 추가되어있습니다.", Toast.LENGTH_SHORT)
+                                    .show()
+                            else {
                                 frameList[cnt].setLabel("${cnt}")
                                 frameList[cnt].setup(0)
                             }
                             true
                         }
                         else -> {
-                            if(frameList[cnt].isSetup){
+                            if (frameList[cnt].isSetup) {
                                 frameList[cnt].unset()
                                 frameList[cnt].isSetup = false
-                            }
-                            else
+                            } else
                                 Toast.makeText(context, "이미 제거했습니다.", Toast.LENGTH_SHORT).show()
                             true
                         }
@@ -198,14 +198,18 @@ class DrawTablet(var binding: FragmentRealtimeBinding, var activity: FragmentAct
                             )
                             frameList[cnt].layoutParams = layoutParams
 
+                            if(frameList[cnt].isSetup)
+                                frameList[cnt].showVoiceBtn(true)
+
                             frameList[cnt].touchCnt++
                         } else {
                             activity.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED
-
                             frameList[cnt].layoutParams = layoutParamsList[cnt]
                             layoutParamsList[cnt] = null
                             frameList[cnt].z = 5.0f
                             frameList[cnt].touchCnt = 0
+
+                            frameList[cnt].showVoiceBtn(false)
 
                             for (other in (0..15).filter { it != cnt }) {
                                 frameList[other].layoutParams = layoutParamsList[other]

@@ -48,6 +48,7 @@ class FullscreenFragment : Fragment() {
             if (activatedCamList.any { it == cnt }) {
                 frameList[cnt!!].setup(1)
                 frameList[cnt].setLabel("${cnt}")
+                frameList[cnt].showVoiceBtn(true)
                 if(warning!!)
                     frameList[cnt].warning(true)
             }

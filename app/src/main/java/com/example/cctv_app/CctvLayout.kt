@@ -2,14 +2,15 @@ package com.example.cctv_app
 
 import android.app.Activity
 import android.graphics.Color
-import android.graphics.Point
 import android.text.SpannableString
 import android.text.style.BackgroundColorSpan
 import android.text.style.ForegroundColorSpan
 import android.util.TypedValue
 import android.view.Gravity
+import android.view.MotionEvent
 import android.view.View
 import android.widget.FrameLayout
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.core.view.setPadding
@@ -27,6 +28,7 @@ class CctvLayout(var activity: Activity) : FrameLayout(activity) {
     /* 개선해야 하는 부분 */
     private val labelView: TextView = TextView(activity)
     private val statusView: TextView = TextView(activity)
+    private var sendVoiceBtn: ImageView = ImageView(activity)
 
     init {
         labelView.setTextColor(Color.WHITE)
@@ -47,6 +49,9 @@ class CctvLayout(var activity: Activity) : FrameLayout(activity) {
         statusView.gravity = Gravity.CENTER
         statusView.text = "IDLE"
 
+        sendVoiceBtn.setImageResource(R.drawable.ic_baseline_mic_none_24)
+        sendVoiceBtn.visibility = View.GONE
+
 
         setPadding(
             TypedValue.applyDimension(
@@ -55,7 +60,6 @@ class CctvLayout(var activity: Activity) : FrameLayout(activity) {
                 resources.displayMetrics
             ).toInt()
         )
-
         background = ContextCompat.getDrawable(activity, R.drawable.layout_border_normal)
 
         z = 5.0f
@@ -72,6 +76,7 @@ class CctvLayout(var activity: Activity) : FrameLayout(activity) {
                 LayoutParams.WRAP_CONTENT
             )
         )
+        addView(sendVoiceBtn, LayoutParams(100, 100).apply { gravity = Gravity.BOTTOM })
     }
 
     fun setLabel(label: String) {
@@ -109,5 +114,22 @@ class CctvLayout(var activity: Activity) : FrameLayout(activity) {
             background = ContextCompat.getDrawable(activity, R.drawable.layout_border_warning)
         else
             background = ContextCompat.getDrawable(activity, R.drawable.layout_border_normal)
+    }
+    fun showVoiceBtn(flag: Boolean){
+        if(flag) {
+            sendVoiceBtn.visibility = View.VISIBLE
+            sendVoiceBtn.setOnTouchListener { view, event ->
+                when(event.action){
+                    MotionEvent.ACTION_DOWN ->{
+                        sendVoiceBtn.setImageResource(R.drawable.ic_baseline_mic_24)
+                    }
+                    else->sendVoiceBtn.setImageResource(R.drawable.ic_baseline_mic_none_24)
+                }
+                true
+            }
+        }
+        else {
+            sendVoiceBtn.visibility = View.GONE
+        }
     }
 }

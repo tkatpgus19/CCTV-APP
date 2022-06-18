@@ -215,11 +215,6 @@ class DrawMobile(var binding: FragmentRealtimeBinding, var activity: FragmentAct
                             .beginTransaction()
                             .add(R.id.nav_fragment, fragment)
                             .commit()
-                        /*
-                        val intent = Intent(context, FullscreenActivity::class.java)
-                        intent.putExtra("cnt", cnt)
-                        intent.putExtra("saveList", saveList)
-                        startActivity(context, intent, null)*/
                     }
                 }
             }

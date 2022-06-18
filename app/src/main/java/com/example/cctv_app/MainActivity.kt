@@ -21,19 +21,6 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main)
 
-        /*
-        val save = intent.getIntegerArrayListExtra("save")
-        if(save != null){
-            val bundle = Bundle()
-            bundle.putIntegerArrayList("saveList", save)
-            bundle.putBoolean("isTablet", false)
-            val fragment = RealtimeFragment()
-            fragment.arguments = bundle
-            supportFragmentManager
-                .beginTransaction()
-                .add(R.id.nav_fragment, fragment)
-                .commit()
-        }*/
         setExpandableList()
     }
 
