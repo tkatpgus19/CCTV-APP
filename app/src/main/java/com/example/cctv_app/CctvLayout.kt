@@ -49,7 +49,7 @@ class CctvLayout(var activity: Activity) : FrameLayout(activity) {
         statusView.gravity = Gravity.CENTER
         statusView.text = "IDLE"
 
-        sendVoiceBtn.setImageResource(R.drawable.ic_baseline_mic_none_24)
+        sendVoiceBtn.setImageResource(R.drawable.ic_baseline_mic_off_24)
         sendVoiceBtn.visibility = View.GONE
 
 
@@ -76,7 +76,7 @@ class CctvLayout(var activity: Activity) : FrameLayout(activity) {
                 LayoutParams.WRAP_CONTENT
             )
         )
-        addView(sendVoiceBtn, LayoutParams(100, 100).apply { gravity = Gravity.BOTTOM })
+        addView(sendVoiceBtn, LayoutParams(300, 300).apply { gravity = Gravity.BOTTOM })
     }
 
     fun setLabel(label: String) {
@@ -123,7 +123,9 @@ class CctvLayout(var activity: Activity) : FrameLayout(activity) {
                     MotionEvent.ACTION_DOWN ->{
                         sendVoiceBtn.setImageResource(R.drawable.ic_baseline_mic_24)
                     }
-                    else->sendVoiceBtn.setImageResource(R.drawable.ic_baseline_mic_none_24)
+                    MotionEvent.ACTION_UP-> {
+                        sendVoiceBtn.setImageResource(R.drawable.ic_baseline_mic_off_24)
+                    }
                 }
                 true
             }

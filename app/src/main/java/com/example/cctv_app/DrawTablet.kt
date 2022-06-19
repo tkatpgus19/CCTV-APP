@@ -4,7 +4,6 @@ import android.animation.LayoutTransition
 import android.content.Context
 import android.content.pm.ActivityInfo
 import android.util.Log
-import android.view.View
 import android.widget.GridLayout
 import android.widget.LinearLayout
 import android.widget.PopupMenu

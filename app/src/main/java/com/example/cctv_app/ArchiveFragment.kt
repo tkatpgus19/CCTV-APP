@@ -19,9 +19,8 @@ class ArchiveFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-
+        /* 저장된 CCTV 영상 조회하는 프래그먼트 */
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_archive, container, false)
-
         val view = binding.root
 
         return view

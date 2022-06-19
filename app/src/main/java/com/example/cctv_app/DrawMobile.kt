@@ -2,12 +2,9 @@ package com.example.cctv_app
 
 import android.animation.LayoutTransition
 import android.content.Context
-import android.content.Intent
 import android.graphics.Point
 import android.os.Bundle
-import android.util.Log
 import android.widget.*
-import androidx.core.content.ContextCompat.startActivity
 import androidx.fragment.app.FragmentActivity
 import com.example.cctv_app.databinding.FragmentRealtimeBinding
 
