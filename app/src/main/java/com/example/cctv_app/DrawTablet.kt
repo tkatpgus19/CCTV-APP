@@ -112,7 +112,6 @@ class DrawTablet(var binding: FragmentRealtimeBinding, var activity: FragmentAct
                                 // 활성화 시 활성화된 카메라 정보 리스트에 추가
                                 activatedCamList.add(cnt)
                                 MyApplication.prefs.saveCamInstance(activatedCamList)
-                                frameList[cnt].pushAlarm(cnt)
                             }
                             true
                         }
