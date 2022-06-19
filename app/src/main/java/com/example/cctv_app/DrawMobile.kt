@@ -20,7 +20,9 @@ class DrawMobile(var binding: FragmentRealtimeBinding, var activity: FragmentAct
         layoutTransition.setDuration(200)
     }
 
+    /* frame 생성, 초기화, addView */
     fun setLayoutParams(){
+        /* 가로, 세로모드 각각 화면크기 체크 후 addView (비율 체크) */
         val sizeX = getSize().x
         var sizeY = getSize().y
 
@@ -78,22 +80,9 @@ class DrawMobile(var binding: FragmentRealtimeBinding, var activity: FragmentAct
         binding.mainLayout.addView(scrollView)
     }
 
-    private fun getSize(): Point {
-        val display = activity.windowManager.defaultDisplay
-        val size = Point()
-        display.getRealSize(size)
-        return size
-    }
-
-    fun setClickEvent(save: ArrayList<Int>){
-        var isWarning = false
-
-        for(n in save){
-            frameList[n].setLabel("${n}")
-            frameList[n].setup(0)
-            activatedCamList.add(n)
-        }
-        for(cnt in 0..15){
+    /* 팝업 메뉴 띄우는 함수 */
+    fun setLongClickEvent() {
+        for (cnt in 0..15) {
             frameList[cnt].setOnLongClickListener {
                 val popupMenu = PopupMenu(context, it)
                 activity.menuInflater.inflate(R.menu.camera_menu, popupMenu.menu)
@@ -107,7 +96,10 @@ class DrawMobile(var binding: FragmentRealtimeBinding, var activity: FragmentAct
                             else {
                                 frameList[cnt].setLabel("${cnt}")
                                 frameList[cnt].setup(0)
+                                
+                                // 활성화 시 활성화된 카메라 정보 리스트에 추가
                                 activatedCamList.add(cnt)
+                                MyApplication.prefs.saveCamInstance(activatedCamList)
                             }
                             true
                         }
@@ -115,35 +107,42 @@ class DrawMobile(var binding: FragmentRealtimeBinding, var activity: FragmentAct
                             if (frameList[cnt].isSetup) {
                                 frameList[cnt].unset()
                                 frameList[cnt].isSetup = false
+                                
+                                // 비활성화 시 활성화된 카메라 정보 리스트에서 제거
                                 activatedCamList.remove(cnt)
+                                MyApplication.prefs.saveCamInstance(activatedCamList)
                             } else
                                 Toast.makeText(context, "이미 제거했습니다.", Toast.LENGTH_SHORT).show()
                             true
                         }
                     }
                 }
-                frameList[cnt].warning(true)
-                isWarning = true
                 true
             }
+        }
 
+    }
+
+    /* frame 의 확대 및 이동 함수 */
+    fun setClickEvent(){
+        /* 활성화된 카메라 정보 리스트가 있을 경우 활성화 */
+        if(MyApplication.prefs.isCamListExist() != "no"){
+            for(n in MyApplication.prefs.getCamInstance()) {
+                frameList[n].setLabel("${n}")
+                frameList[n].setup(0)
+                activatedCamList.add(n)
+            }
+        }
+
+        for(cnt in 0..15){
             frameList[cnt].setOnClickListener {
 
+                /* 해당 frame 의 z 값이 0.0f가 아닐때만 클릭 리스너를 등록함.
+                   즉, 특정 frame 확대 시에는 다른 frame 이 터치되지 않도록 클릭리스너를 등록하지 않음 */
                 if (frameList[cnt].z != 0.0f) {
-                    if (layoutParamsList[cnt] != null && frameList[cnt].touchCnt == 2) {
 
-                        frameList[cnt].layoutParams = layoutParamsList[cnt]
-                        layoutParamsList[cnt] = null
-
-                        for (other in (0..15).filter { it != cnt }) {
-                            frameList[other].z = 5.0f
-                            frameList[other].layoutParams = layoutParamsList[other]
-                            layoutParamsList[other] = null
-                        }
-                        frameList[cnt].touchCnt = 0
-                    }
-
-                    else if (frameList[cnt].touchCnt == 0) {
+                    /**** 해당 frame 이 처음 터치될 때 (1차 확대) ****/
+                    if (frameList[cnt].touchCnt == 0) {
                         layoutParamsList[cnt] = frameList[cnt].layoutParams as GridLayout.LayoutParams
 
                         var layoutParams = GridLayout.LayoutParams(
@@ -156,6 +155,8 @@ class DrawMobile(var binding: FragmentRealtimeBinding, var activity: FragmentAct
                         frameList[cnt].z = 10.0f
                         frameList[cnt].layoutParams = layoutParams
 
+                        /* 확대된 frame 을 제외한 나머지 frame 이동 */
+                        /* 짝수번 frame 이동 */
                         if (cnt % 2 == 0) {
                             for (other in (0..15).filter { it != cnt }) {
                                 if (other < cnt) {
@@ -172,7 +173,9 @@ class DrawMobile(var binding: FragmentRealtimeBinding, var activity: FragmentAct
                                 layoutParams.height = 0
                                 frameList[other].layoutParams = layoutParams
                             }
-                        } else {
+                        }
+                        /* 홀수번 frame 이동 */
+                        else {
                             for (other in (0..15).filter { it != cnt }) {
                                 if (other < cnt - 1) {
                                     layoutParamsList[other] = frameList[other].layoutParams as GridLayout.LayoutParams
@@ -196,16 +199,17 @@ class DrawMobile(var binding: FragmentRealtimeBinding, var activity: FragmentAct
                                 frameList[other].layoutParams = layoutParams
                             }
                         }
+                        /* 확대된 frame 을 제외한 모든 frame z 값 0.0f로 설정 */
                         for (other in (0..15).filter { it != cnt }) {
                             frameList[other].z = 0.0f
                         }
                         frameList[cnt].touchCnt++
                     }
-                    else{
+
+                    /**** 해당 frame 이 두번 터치될 때 (전체 화면으로 확대 -> FullscreenFragment 로 이동) ****/
+                    else if(frameList[cnt].touchCnt == 1){
                         val bundle = Bundle()
-                        bundle.putInt("cnt", cnt)
-                        bundle.putBoolean("isWarning", isWarning)
-                        bundle.putIntegerArrayList("activatedCamList", activatedCamList)
+                        bundle.putInt("extendedFrameNum", cnt)
                         val fragment = FullscreenFragment()
                         fragment.arguments = bundle
                         activity.supportFragmentManager
@@ -213,8 +217,29 @@ class DrawMobile(var binding: FragmentRealtimeBinding, var activity: FragmentAct
                             .add(R.id.nav_fragment, fragment)
                             .commit()
                     }
+
+                    /**** 해당 frame 이 세번 터치될 때 (다시 원상복귀) ****/
+                    else {
+                        frameList[cnt].layoutParams = layoutParamsList[cnt]
+                        layoutParamsList[cnt] = null
+
+                        for (other in (0..15).filter { it != cnt }) {
+                            frameList[other].z = 5.0f
+                            frameList[other].layoutParams = layoutParamsList[other]
+                            layoutParamsList[other] = null
+                        }
+                        frameList[cnt].touchCnt = 0
+                    }
                 }
             }
         }
+    }
+
+    /* 화면크기 계산 함수 */
+    private fun getSize(): Point {
+        val display = activity.windowManager.defaultDisplay
+        val size = Point()
+        display.getRealSize(size)
+        return size
     }
 }

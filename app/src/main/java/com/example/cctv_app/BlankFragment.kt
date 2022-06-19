@@ -16,6 +16,8 @@ class BlankFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+
+        /* 기타 추가될 프래그먼트 */
         val view = inflater.inflate(R.layout.fragment_archive, container, false)
         return view
     }

@@ -11,12 +11,18 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
 
-    // 태블릿 확인 변수
+    // 태블릿인지 체크하는 변수
     private var isTablet = false
     private var backKeyPressedTime = 0L
 
     // drawer layout 메뉴에서 어떤 메뉴가 선택되었는지 체크하는 변수
     private var selectedMenu = 0
+
+    companion object {
+        private const val NONE = 0
+        private const val PHONE = 1
+        private const val TABLET = 2
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -36,6 +42,8 @@ class MainActivity : AppCompatActivity() {
         val expandableAdapter = ExpandableListAdapter(this, parentList, childList)
         binding.elMenu.setAdapter(expandableAdapter)
 
+        binding.drawerLayout.openDrawer(GravityCompat.START)
+
         /* 부모메뉴 클릭 리스너('실시간 CCTV', '저장된 CCTV 영상', '추가 예정') */
         binding.elMenu.setOnGroupClickListener { expandableListView, view, i, id ->
             when(id){
@@ -46,13 +54,13 @@ class MainActivity : AppCompatActivity() {
                         .beginTransaction()
                         .add(R.id.nav_fragment, fragment)
                         .commit()
-                    selectedMenu = Companion.OTHER_MENU
+                    selectedMenu = NONE
                     binding.drawerLayout.closeDrawer(GravityCompat.START)
                 }
                 2L -> {
                     /* '추가 예정' 클릭 */
+                    selectedMenu = NONE
                     binding.drawerLayout.closeDrawer(GravityCompat.START)
-                    selectedMenu = Companion.OTHER_MENU
                 }
             }
             false
@@ -62,10 +70,9 @@ class MainActivity : AppCompatActivity() {
             when(id){
                 0L -> {
                     /* '2x2' 클릭 */
-                    if(selectedMenu != 1) {
+                    if(selectedMenu != PHONE) {
                         isTablet = false
 
-                        expandableListView.getChildAt(1).isEnabled = false
                         val bundle = Bundle()
                         bundle.putBoolean("isTablet", isTablet)
 
@@ -75,12 +82,11 @@ class MainActivity : AppCompatActivity() {
                             .beginTransaction()
                             .add(R.id.nav_fragment, fragment)
                             .commit()
-                        selectedMenu = 1
+                        selectedMenu = PHONE
                     }
-                    /* 이미 2x2 레이아웃 일때 알림메시지*/
+                    /* 이미 2x2 레이아웃 일때 알림메시지 */
                     else{
                         Toast.makeText(this, "이미 2x2 레이아웃입니다.", Toast.LENGTH_SHORT).show()
-                        expandableListView.getChildAt(1).isEnabled = true
                     }
                 }
                 1L -> {
@@ -88,7 +94,6 @@ class MainActivity : AppCompatActivity() {
                     if (selectedMenu != 2) {
                         isTablet = true
 
-                        expandableListView.getChildAt(2).isEnabled = false
                         val bundle = Bundle()
                         bundle.putBoolean("isTablet", isTablet)
 
@@ -98,12 +103,11 @@ class MainActivity : AppCompatActivity() {
                             .beginTransaction()
                             .add(R.id.nav_fragment, fragment)
                             .commit()
-                        selectedMenu = 2
+                        selectedMenu = TABLET
                     }
-                    /* 이미 4x4 레이아웃 일때 알림메시지*/
+                    /* 이미 4x4 레이아웃 일때 알림메시지 */
                     else {
                         Toast.makeText(this, "이미 4x4 레이아웃입니다.", Toast.LENGTH_SHORT).show()
-                        expandableListView.getChildAt(2).isEnabled = true
                     }
                 }
             }
@@ -113,7 +117,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    /* 뒤로가기시 DrawerLayout 닫기 구현 */
+    /* 뒤로가기 시 DrawerLayout 닫기 구현 */
     override fun onBackPressed() {
         if(binding.drawerLayout.isDrawerOpen(GravityCompat.START))
             binding.drawerLayout.closeDrawer(GravityCompat.START)
@@ -128,7 +132,5 @@ class MainActivity : AppCompatActivity() {
             //super.onBackPressed()
     }
 
-    companion object {
-        private const val OTHER_MENU = 0
-    }
+
 }
